@@ -63,14 +63,20 @@ export class ApiService {
           // Provide user-friendly error messages
           if (errorMsg.includes('size limit') || errorMsg.includes('too large') || errorMsg.includes('exceeded')) {
             const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
-            errorMsg = `File too large (${sizeMB}MB). Maximum: 25MB. Please compress or split the audio file.`
+            errorMsg = `File quá lớn (${sizeMB}MB). Giới hạn: 25MB. Vui lòng nén hoặc chia nhỏ file.`
           } else if (error.response?.status === 413) {
             const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
-            errorMsg = `File too large (${sizeMB}MB). Maximum: 25MB. Please use a smaller file.`
+            errorMsg = `File quá lớn (${sizeMB}MB). Giới hạn: 25MB. Vui lòng dùng file nhỏ hơn.`
           } else if (error.response?.status === 400) {
-            errorMsg = `Invalid audio format. Please use MP3, WAV, or M4A format.`
+            errorMsg = `Định dạng audio không hợp lệ. Vui lòng dùng MP3, WAV, hoặc M4A.`
           } else if (error.response?.status === 401 || error.response?.status === 403) {
-            errorMsg = `API authentication failed. Please check your API keys.`
+            errorMsg = `Lỗi xác thực API. Vui lòng kiểm tra API keys trong .env.local`
+          } else if (error.response?.status === 429) {
+            errorMsg = `API rate limit exceeded. Vui lòng thử lại sau vài phút.`
+          } else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+            errorMsg = `Hết thời gian chờ. File có thể quá lớn hoặc kết nối chậm.`
+          } else if (!error.response && error.request) {
+            errorMsg = `Không thể kết nối đến API. Vui lòng kiểm tra kết nối internet.`
           }
           
           throw new Error(`❌ Transcription failed: ${errorMsg}`)
