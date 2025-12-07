@@ -31,8 +31,6 @@ export class ApiService {
       throw new Error('❌ No transcription APIs available. Check your API keys.')
     }
 
-    let lastError: any = null
-
     for (let i = 0; i < apis.length; i++) {
       try {
         const api = apis[i]
@@ -41,7 +39,6 @@ export class ApiService {
         const result = await api.handler(audioBlob, enableDiarization)
         return result
       } catch (error: any) {
-        lastError = error
         console.error(`${apis[i].name} failed:`, error)
         console.error('Error details:', {
           message: error.message,
@@ -49,14 +46,18 @@ export class ApiService {
           status: error.response?.status,
         })
         
+        // If this was the last API, throw the error
         if (i === apis.length - 1) {
           const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
           throw new Error(`All transcription APIs failed. Last error: ${errorMsg}`)
         }
+        // Otherwise continue to the next API
       }
     }
-
-    throw lastError || new Error('No transcription APIs available')
+    
+    // TypeScript requires this: the loop above always returns or throws,
+    // but TS can't prove it statically. This line will never execute.
+    return undefined as never
   }
 
   private static async transcribeWithDeepgram(

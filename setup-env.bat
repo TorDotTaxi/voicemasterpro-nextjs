@@ -59,11 +59,11 @@ if exist .env.local (
     echo.
     echo Please create manually with these contents:
     echo.
-    echo NEXT_PUBLIC_GEMINI_API_KEY=AIzaSyAwYuKHRkLg7_uvZfmU7AnbrJSO2ykweQw
-    echo NEXT_PUBLIC_DEEPGRAM_API_KEY=4acc334413436e98e24c15b7e48dc2ced6216f2c
-    echo NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY=AIzaSyCKRoXy5fAYQENKhlDDCGnu4axn_hsok7s
-    echo NEXT_PUBLIC_FPT_AI_API_KEY=dIP80FYgNqy0U1iMb0MlyU5h95FVOmBi
-    echo NEXT_PUBLIC_ASSEMBLY_AI_API_KEY=abee456b3f9342fc90cfc44aeb2f2501
+    echo NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
+    echo NEXT_PUBLIC_DEEPGRAM_API_KEY=your_deepgram_api_key_here
+    echo NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY=your_google_cloud_api_key_here
+    echo NEXT_PUBLIC_FPT_AI_API_KEY=your_fpt_ai_api_key_here
+    echo NEXT_PUBLIC_ASSEMBLY_AI_API_KEY=your_assemblyai_api_key_here
     echo.
 )
 
