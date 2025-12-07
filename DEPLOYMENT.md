@@ -57,12 +57,18 @@ git push -u origin main
 
 5. **Add Environment Variables** (CRITICAL):
    ```
-   NEXT_PUBLIC_GEMINI_API_KEY = AIzaSyAwYuKHRkLg7_uvZfmU7AnbrJSO2ykweQw
-   NEXT_PUBLIC_DEEPGRAM_API_KEY = 4acc334413436e98e24c15b7e48dc2ced6216f2c
-   NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY = AIzaSyCKRoXy5fAYQENKhlDDCGnu4axn_hsok7s
-   NEXT_PUBLIC_FPT_AI_API_KEY = dIP80FYgNqy0U1iMb0MlyU5h95FVOmBi
-   NEXT_PUBLIC_ASSEMBLY_AI_API_KEY = abee456b3f9342fc90cfc44aeb2f2501
+   NEXT_PUBLIC_GEMINI_API_KEY = <your_gemini_api_key>
+   NEXT_PUBLIC_DEEPGRAM_API_KEY = <your_deepgram_api_key>
+   NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY = <your_google_cloud_api_key>
+   NEXT_PUBLIC_FPT_AI_API_KEY = <your_fpt_ai_api_key>
+   NEXT_PUBLIC_ASSEMBLY_AI_API_KEY = <your_assemblyai_api_key>
    ```
+   
+   🔐 Get your API keys from:
+   - Gemini: https://makersuite.google.com/app/apikey
+   - Deepgram: https://console.deepgram.com/
+   - FPT AI: https://fpt.ai/
+   - AssemblyAI: https://www.assemblyai.com/
 
 6. **Click "Deploy"**
 
@@ -249,11 +255,11 @@ Go to: **Your Repo → Settings → Secrets and variables → Actions**
 Add these secrets:
 
 ```
-GEMINI_API_KEY = AIzaSyAwYuKHRkLg7_uvZfmU7AnbrJSO2ykweQw
-DEEPGRAM_API_KEY = 4acc334413436e98e24c15b7e48dc2ced6216f2c
-GOOGLE_CLOUD_API_KEY = AIzaSyCKRoXy5fAYQENKhlDDCGnu4axn_hsok7s
-FPT_AI_API_KEY = dIP80FYgNqy0U1iMb0MlyU5h95FVOmBi
-ASSEMBLY_AI_API_KEY = abee456b3f9342fc90cfc44aeb2f2501
+GEMINI_API_KEY = <your_gemini_api_key>
+DEEPGRAM_API_KEY = <your_deepgram_api_key>
+GOOGLE_CLOUD_API_KEY = <your_google_cloud_api_key>
+FPT_AI_API_KEY = <your_fpt_ai_api_key>
+ASSEMBLY_AI_API_KEY = <your_assemblyai_api_key>
 ```
 
 For Vercel auto-deployment, also add:

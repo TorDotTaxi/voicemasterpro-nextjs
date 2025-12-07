@@ -3,13 +3,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["sin1", "hnd1"],
-  "env": {
-    "NEXT_PUBLIC_GEMINI_API_KEY": "@gemini-api-key",
-    "NEXT_PUBLIC_DEEPGRAM_API_KEY": "@deepgram-api-key",
-    "NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY": "@google-cloud-api-key",
-    "NEXT_PUBLIC_FPT_AI_API_KEY": "@fpt-ai-api-key",
-    "NEXT_PUBLIC_ASSEMBLY_AI_API_KEY": "@assembly-ai-api-key"
-  }
+  "regions": ["sin1", "hnd1"]
 }
 
