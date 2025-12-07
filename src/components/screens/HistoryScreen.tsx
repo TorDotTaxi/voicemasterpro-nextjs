@@ -64,7 +64,7 @@ export default function HistoryScreen() {
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
-    return `${mins}:${String(secs).padLeft(2, '0')}`
+    return `${mins}:${String(secs).padStart(2, '0')}`
   }
 
   if (isLoading) {
