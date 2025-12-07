@@ -93,11 +93,11 @@ export default function RecordingScreen() {
   const transcribeRecording = async () => {
     if (!audioBlob) return
 
-    // Check file size before processing
-    const MAX_SIZE = 25 * 1024 * 1024 // 25MB
+    // Check file size before processing (Deepgram limit: 2MB)
+    const MAX_SIZE = 2 * 1024 * 1024 // 2MB (Deepgram's limit)
     if (audioBlob.size > MAX_SIZE) {
       const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
-      toast.error(`Recording too long! Size: ${sizeMB}MB. Maximum: 25MB. Please record a shorter audio.`)
+      toast.error(`Recording quá dài! Kích thước: ${sizeMB}MB. Giới hạn: 2MB (Deepgram). Vui lòng ghi âm ngắn hơn.`)
       return
     }
 
