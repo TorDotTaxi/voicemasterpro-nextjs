@@ -82,6 +82,6 @@
 
 ---
 
-**Auto-fix completed at**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")  
+**Auto-fix completed at**: December 7, 2025  
 **Status**: ✅ Ready for manual key rotation
 
