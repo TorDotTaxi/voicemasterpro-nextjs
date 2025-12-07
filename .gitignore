@@ -28,6 +28,9 @@ yarn-error.log*
 .env*.local
 .env
 
+# scripts with potential secrets
+add-vercel-env.bat
+
 # vercel
 .vercel
 

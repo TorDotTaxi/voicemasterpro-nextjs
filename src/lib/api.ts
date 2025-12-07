@@ -22,6 +22,16 @@ export class ApiService {
       throw new Error('❌ No API keys configured! Please create .env.local file with your API keys.')
     }
 
+    // Validate file size (25MB limit for most APIs)
+    const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB in bytes
+    if (audioBlob.size > MAX_FILE_SIZE) {
+      const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+      throw new Error(
+        `❌ File too large! Size: ${sizeMB}MB. Maximum allowed: 25MB. ` +
+        `Please use a smaller audio file or compress it.`
+      )
+    }
+
     const apis = [
       { name: 'Deepgram', handler: this.transcribeWithDeepgram.bind(this), enabled: !!DEEPGRAM_KEY },
       { name: 'FPT.AI', handler: this.transcribeWithFPTAI.bind(this), enabled: !!FPT_AI_KEY },
@@ -48,8 +58,28 @@ export class ApiService {
         
         // If this was the last API, throw the error
         if (i === apis.length - 1) {
-          const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
-          throw new Error(`All transcription APIs failed. Last error: ${errorMsg}`)
+          let errorMsg = error.response?.data?.message || error.message || 'Unknown error'
+          
+          // Provide user-friendly error messages
+          if (errorMsg.includes('size limit') || errorMsg.includes('too large') || errorMsg.includes('exceeded')) {
+            const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+            errorMsg = `File quá lớn (${sizeMB}MB). Giới hạn: 25MB. Vui lòng nén hoặc chia nhỏ file.`
+          } else if (error.response?.status === 413) {
+            const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+            errorMsg = `File quá lớn (${sizeMB}MB). Giới hạn: 25MB. Vui lòng dùng file nhỏ hơn.`
+          } else if (error.response?.status === 400) {
+            errorMsg = `Định dạng audio không hợp lệ. Vui lòng dùng MP3, WAV, hoặc M4A.`
+          } else if (error.response?.status === 401 || error.response?.status === 403) {
+            errorMsg = `Lỗi xác thực API. Vui lòng kiểm tra API keys trong .env.local`
+          } else if (error.response?.status === 429) {
+            errorMsg = `API rate limit exceeded. Vui lòng thử lại sau vài phút.`
+          } else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+            errorMsg = `Hết thời gian chờ. File có thể quá lớn hoặc kết nối chậm.`
+          } else if (!error.response && error.request) {
+            errorMsg = `Không thể kết nối đến API. Vui lòng kiểm tra kết nối internet.`
+          }
+          
+          throw new Error(`❌ Transcription failed: ${errorMsg}`)
         }
         // Otherwise continue to the next API
       }
@@ -68,10 +98,10 @@ export class ApiService {
       ? 'https://api.deepgram.com/v1/listen?diarize=true&language=vi&punctuate=true&utterances=true'
       : 'https://api.deepgram.com/v1/listen?language=vi&punctuate=true'
 
+    // Don't set Content-Type - let browser detect from blob type
     const response = await axios.post(url, audioBlob, {
       headers: {
         'Authorization': `Token ${DEEPGRAM_KEY}`,
-        'Content-Type': 'audio/wav',
       },
       onUploadProgress: (progressEvent) => {
         const progress = progressEvent.total 
@@ -79,20 +109,29 @@ export class ApiService {
           : 0
         this.updateProgress?.('Deepgram', progress, `Uploading... ${Math.round(progress * 100)}%`)
       },
+      timeout: 300000, // 5 minute timeout for long audio files
     })
 
     return this.parseDeepgramResponse(response.data)
   }
 
   private static parseDeepgramResponse(data: any): TranscriptionResult {
+    if (!data?.results) {
+      throw new Error('Invalid Deepgram response: missing results')
+    }
+
     const results = data.results
-    const channels = results.channels[0]
-    const alternatives = channels.alternatives[0]
+    const channels = results?.channels?.[0]
+    const alternatives = channels?.alternatives?.[0]
+    
+    if (!alternatives) {
+      throw new Error('Invalid Deepgram response: no transcription found')
+    }
     
     const transcription = alternatives.transcript || ''
     const speakers: Speaker[] = []
 
-    if (results.utterances) {
+    if (results.utterances && Array.isArray(results.utterances)) {
       const speakerMap = new Map<number, SpeakerSegment[]>()
 
       results.utterances.forEach((utterance: any) => {
@@ -138,25 +177,32 @@ export class ApiService {
     enableDiarization: boolean
   ): Promise<TranscriptionResult> {
     const formData = new FormData()
-    formData.append('file', audioBlob)
+    formData.append('file', audioBlob, 'audio.wav')
 
     const response = await axios.post(
       'https://api.fpt.ai/hmi/asr/general',
-      audioBlob,
+      formData,
       {
         headers: {
           'api-key': FPT_AI_KEY!,
-          'Content-Type': 'audio/wav',
+          // Don't set Content-Type - FormData sets it automatically with boundary
+        },
+        timeout: 300000, // 5 minute timeout
+        onUploadProgress: (progressEvent) => {
+          const progress = progressEvent.total 
+            ? (progressEvent.loaded / progressEvent.total) 
+            : 0
+          this.updateProgress?.('FPT.AI', progress, `Uploading... ${Math.round(progress * 100)}%`)
         },
       }
     )
 
-    const transcription = response.data.hypotheses?.[0]?.utterance || ''
+    const transcription = response.data.hypotheses?.[0]?.utterance || response.data.asr?.hypotheses?.[0]?.utterance || ''
 
     return {
       transcription,
       speakers: [],
-      confidence: response.data.hypotheses?.[0]?.confidence || 0,
+      confidence: response.data.hypotheses?.[0]?.confidence || response.data.asr?.hypotheses?.[0]?.confidence || 0,
     }
   }
 
