@@ -116,14 +116,22 @@ export class ApiService {
   }
 
   private static parseDeepgramResponse(data: any): TranscriptionResult {
+    if (!data?.results) {
+      throw new Error('Invalid Deepgram response: missing results')
+    }
+
     const results = data.results
-    const channels = results.channels[0]
-    const alternatives = channels.alternatives[0]
+    const channels = results?.channels?.[0]
+    const alternatives = channels?.alternatives?.[0]
+    
+    if (!alternatives) {
+      throw new Error('Invalid Deepgram response: no transcription found')
+    }
     
     const transcription = alternatives.transcript || ''
     const speakers: Speaker[] = []
 
-    if (results.utterances) {
+    if (results.utterances && Array.isArray(results.utterances)) {
       const speakerMap = new Map<number, SpeakerSegment[]>()
 
       results.utterances.forEach((utterance: any) => {
