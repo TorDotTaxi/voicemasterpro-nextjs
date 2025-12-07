@@ -75,7 +75,7 @@ After cleaning:
 
 ```powershell
 # Search for any remaining API keys
-git log --all --full-history -S'AIzaSyBxuMbv' --source --
+git log --all --full-history -S'AIza' --source --  # Generic pattern only
 
 # Should return NO results
 ```
