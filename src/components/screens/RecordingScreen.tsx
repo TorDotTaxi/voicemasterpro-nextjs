@@ -93,6 +93,14 @@ export default function RecordingScreen() {
   const transcribeRecording = async () => {
     if (!audioBlob) return
 
+    // Check file size before processing
+    const MAX_SIZE = 25 * 1024 * 1024 // 25MB
+    if (audioBlob.size > MAX_SIZE) {
+      const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+      toast.error(`Recording too long! Size: ${sizeMB}MB. Maximum: 25MB. Please record a shorter audio.`)
+      return
+    }
+
     ApiService.setProgressCallback((api, progress, message) => {
       setApiProgress({
         currentApi: api,

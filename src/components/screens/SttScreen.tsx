@@ -26,7 +26,16 @@ export default function SttScreen() {
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
-      setAudioFile(acceptedFiles[0])
+      const file = acceptedFiles[0]
+      const MAX_SIZE = 25 * 1024 * 1024 // 25MB
+      
+      if (file.size > MAX_SIZE) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2)
+        toast.error(`File too large! Size: ${sizeMB}MB. Maximum: 25MB. Please use a smaller file.`)
+        return
+      }
+      
+      setAudioFile(file)
       setTranscription('')
       setSpeakers([])
     }
@@ -38,6 +47,18 @@ export default function SttScreen() {
       'audio/*': ['.mp3', '.wav', '.webm', '.mp4', '.m4a', '.ogg']
     },
     multiple: false,
+    maxSize: 25 * 1024 * 1024, // 25MB
+    onDropRejected: (rejectedFiles) => {
+      rejectedFiles.forEach(({ file, errors }) => {
+        errors.forEach((error) => {
+          if (error.code === 'file-too-large') {
+            toast.error(`File too large! Maximum size: 25MB. Your file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`)
+          } else {
+            toast.error(`File rejected: ${error.message}`)
+          }
+        })
+      })
+    },
   })
 
   const transcribe = async () => {

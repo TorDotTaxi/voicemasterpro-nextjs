@@ -22,6 +22,16 @@ export class ApiService {
       throw new Error('❌ No API keys configured! Please create .env.local file with your API keys.')
     }
 
+    // Validate file size (25MB limit for most APIs)
+    const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB in bytes
+    if (audioBlob.size > MAX_FILE_SIZE) {
+      const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+      throw new Error(
+        `❌ File too large! Size: ${sizeMB}MB. Maximum allowed: 25MB. ` +
+        `Please use a smaller audio file or compress it.`
+      )
+    }
+
     const apis = [
       { name: 'Deepgram', handler: this.transcribeWithDeepgram.bind(this), enabled: !!DEEPGRAM_KEY },
       { name: 'FPT.AI', handler: this.transcribeWithFPTAI.bind(this), enabled: !!FPT_AI_KEY },
@@ -48,8 +58,22 @@ export class ApiService {
         
         // If this was the last API, throw the error
         if (i === apis.length - 1) {
-          const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
-          throw new Error(`All transcription APIs failed. Last error: ${errorMsg}`)
+          let errorMsg = error.response?.data?.message || error.message || 'Unknown error'
+          
+          // Provide user-friendly error messages
+          if (errorMsg.includes('size limit') || errorMsg.includes('too large') || errorMsg.includes('exceeded')) {
+            const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+            errorMsg = `File too large (${sizeMB}MB). Maximum: 25MB. Please compress or split the audio file.`
+          } else if (error.response?.status === 413) {
+            const sizeMB = (audioBlob.size / (1024 * 1024)).toFixed(2)
+            errorMsg = `File too large (${sizeMB}MB). Maximum: 25MB. Please use a smaller file.`
+          } else if (error.response?.status === 400) {
+            errorMsg = `Invalid audio format. Please use MP3, WAV, or M4A format.`
+          } else if (error.response?.status === 401 || error.response?.status === 403) {
+            errorMsg = `API authentication failed. Please check your API keys.`
+          }
+          
+          throw new Error(`❌ Transcription failed: ${errorMsg}`)
         }
         // Otherwise continue to the next API
       }
