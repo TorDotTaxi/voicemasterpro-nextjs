@@ -14,7 +14,7 @@ All automated security fixes have been successfully applied. The repository is n
 ## ✅ **What Was Fixed Automatically**
 
 ### **1. Dangerous Files Removed** ✅
-- ❌ `add-vercel-env.bat` - **DELETED** (contained 5 real API keys)
+- ❌ `add-vercel-env.bat` - **DELETED** (contained hardcoded API keys)
 - ❌ `SECURITY_AUDIT_FINAL.md` - **DELETED** (contained API key strings)
 - ✅ Both files no longer exist in filesystem
 
@@ -110,7 +110,7 @@ After rotating keys:
    - Go to: https://vercel.com/dashboard
    - Select project: `voicemasterpro-nextjs`
    - Settings → Environment Variables
-   - Add all 5 NEW keys
+   - Add all required API keys (Gemini, Deepgram, FPT AI, AssemblyAI)
 3. Redeploy application
 
 ---
@@ -119,7 +119,7 @@ After rotating keys:
 
 | File | Action | Reason |
 |------|--------|--------|
-| `add-vercel-env.bat` | ❌ DELETED | Contained 5 real API keys |
+| `add-vercel-env.bat` | ❌ DELETED | Contained hardcoded API keys |
 | `SECURITY_AUDIT_FINAL.md` | ❌ DELETED | Contained API key strings |
 | `.gitignore` | ✅ UPDATED | Added file protection |
 | `SECURITY_BREACH_CLEANUP.md` | ✅ CLEANED | Removed key from search |

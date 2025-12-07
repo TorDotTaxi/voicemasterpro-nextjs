@@ -163,25 +163,32 @@ export class ApiService {
     enableDiarization: boolean
   ): Promise<TranscriptionResult> {
     const formData = new FormData()
-    formData.append('file', audioBlob)
+    formData.append('file', audioBlob, 'audio.wav')
 
     const response = await axios.post(
       'https://api.fpt.ai/hmi/asr/general',
-      audioBlob,
+      formData,
       {
         headers: {
           'api-key': FPT_AI_KEY!,
-          'Content-Type': 'audio/wav',
+          // Don't set Content-Type - FormData sets it automatically with boundary
+        },
+        timeout: 300000, // 5 minute timeout
+        onUploadProgress: (progressEvent) => {
+          const progress = progressEvent.total 
+            ? (progressEvent.loaded / progressEvent.total) 
+            : 0
+          this.updateProgress?.('FPT.AI', progress, `Uploading... ${Math.round(progress * 100)}%`)
         },
       }
     )
 
-    const transcription = response.data.hypotheses?.[0]?.utterance || ''
+    const transcription = response.data.hypotheses?.[0]?.utterance || response.data.asr?.hypotheses?.[0]?.utterance || ''
 
     return {
       transcription,
       speakers: [],
-      confidence: response.data.hypotheses?.[0]?.confidence || 0,
+      confidence: response.data.hypotheses?.[0]?.confidence || response.data.asr?.hypotheses?.[0]?.confidence || 0,
     }
   }
 
