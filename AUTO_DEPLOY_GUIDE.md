@@ -96,28 +96,34 @@ Click **"Environment Variables"** và thêm **5 variables**:
 
 ```
 Name: NEXT_PUBLIC_GEMINI_API_KEY
-Value: AIzaSyAwYuKHRkLg7_uvZfmU7AnbrJSO2ykweQw
+Value: your_gemini_api_key_here
 ```
 
 ```
 Name: NEXT_PUBLIC_DEEPGRAM_API_KEY
-Value: 4acc334413436e98e24c15b7e48dc2ced6216f2c
+Value: your_deepgram_api_key_here
 ```
 
 ```
 Name: NEXT_PUBLIC_GOOGLE_CLOUD_API_KEY
-Value: AIzaSyCKRoXy5fAYQENKhlDDCGnu4axn_hsok7s
+Value: your_google_cloud_api_key_here
 ```
 
 ```
 Name: NEXT_PUBLIC_FPT_AI_API_KEY
-Value: dIP80FYgNqy0U1iMb0MlyU5h95FVOmBi
+Value: your_fpt_ai_api_key_here
 ```
 
 ```
 Name: NEXT_PUBLIC_ASSEMBLY_AI_API_KEY
-Value: abee456b3f9342fc90cfc44aeb2f2501
+Value: your_assemblyai_api_key_here
 ```
+
+**🔐 Security Note**: Replace the placeholder values above with your actual API keys. Get your keys from:
+- **Gemini**: https://makersuite.google.com/app/apikey
+- **Deepgram**: https://console.deepgram.com/
+- **FPT AI**: https://fpt.ai/
+- **AssemblyAI**: https://www.assemblyai.com/
 
 ### Bước 5: Deploy!
 
@@ -169,27 +175,27 @@ File `.github/workflows/deploy.yml` đã có sẵn trong project!
 
 ```
 Name: GEMINI_API_KEY
-Secret: AIzaSyAwYuKHRkLg7_uvZfmU7AnbrJSO2ykweQw
+Secret: your_gemini_api_key_here
 ```
 
 ```
 Name: DEEPGRAM_API_KEY
-Secret: 4acc334413436e98e24c15b7e48dc2ced6216f2c
+Secret: your_deepgram_api_key_here
 ```
 
 ```
 Name: GOOGLE_CLOUD_API_KEY
-Secret: AIzaSyCKRoXy5fAYQENKhlDDCGnu4axn_hsok7s
+Secret: your_google_cloud_api_key_here
 ```
 
 ```
 Name: FPT_AI_API_KEY
-Secret: dIP80FYgNqy0U1iMb0MlyU5h95FVOmBi
+Secret: your_fpt_ai_api_key_here
 ```
 
 ```
 Name: ASSEMBLY_AI_API_KEY
-Secret: abee456b3f9342fc90cfc44aeb2f2501
+Secret: your_assemblyai_api_key_here
 ```
 
 **For Vercel auto-deploy (Optional):**
