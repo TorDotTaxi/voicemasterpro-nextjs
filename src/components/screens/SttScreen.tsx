@@ -27,11 +27,12 @@ export default function SttScreen() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0]
-      const MAX_SIZE = 25 * 1024 * 1024 // 25MB
+      // Deepgram limit: 2MB, FPT AI limit: 5MB - use stricter limit for client-side validation
+      const MAX_SIZE = 2 * 1024 * 1024 // 2MB (Deepgram's limit)
       
       if (file.size > MAX_SIZE) {
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2)
-        toast.error(`File too large! Size: ${sizeMB}MB. Maximum: 25MB. Please use a smaller file.`)
+        toast.error(`File quá lớn! Kích thước: ${sizeMB}MB. Giới hạn: 2MB (Deepgram). Vui lòng nén file hoặc chia nhỏ.`)
         return
       }
       
@@ -47,12 +48,13 @@ export default function SttScreen() {
       'audio/*': ['.mp3', '.wav', '.webm', '.mp4', '.m4a', '.ogg']
     },
     multiple: false,
-    maxSize: 25 * 1024 * 1024, // 25MB
+    maxSize: 2 * 1024 * 1024, // 2MB (Deepgram's limit)
     onDropRejected: (rejectedFiles) => {
       rejectedFiles.forEach(({ file, errors }) => {
         errors.forEach((error) => {
           if (error.code === 'file-too-large') {
-            toast.error(`File too large! Maximum size: 25MB. Your file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`)
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2)
+            toast.error(`File quá lớn! Giới hạn: 2MB (Deepgram). File của bạn: ${sizeMB}MB. Vui lòng nén file.`)
           } else {
             toast.error(`File rejected: ${error.message}`)
           }

@@ -27,9 +27,10 @@ export default function TtsScreen() {
       const blob = await ApiService.textToSpeech(text, gender)
       setAudioBlob(blob)
       toast.success('Speech generated!')
-    } catch (error) {
+    } catch (error: any) {
       console.error('TTS failed:', error)
-      toast.error('Failed to generate speech')
+      const errorMessage = error?.message || 'Không thể tạo giọng nói. Vui lòng thử lại.'
+      toast.error(errorMessage, { duration: 5000 })
     } finally {
       setIsGenerating(false)
     }
