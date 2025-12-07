@@ -92,10 +92,10 @@ export class ApiService {
       ? 'https://api.deepgram.com/v1/listen?diarize=true&language=vi&punctuate=true&utterances=true'
       : 'https://api.deepgram.com/v1/listen?language=vi&punctuate=true'
 
+    // Don't set Content-Type - let browser detect from blob type
     const response = await axios.post(url, audioBlob, {
       headers: {
         'Authorization': `Token ${DEEPGRAM_KEY}`,
-        'Content-Type': 'audio/wav',
       },
       onUploadProgress: (progressEvent) => {
         const progress = progressEvent.total 
@@ -103,6 +103,7 @@ export class ApiService {
           : 0
         this.updateProgress?.('Deepgram', progress, `Uploading... ${Math.round(progress * 100)}%`)
       },
+      timeout: 300000, // 5 minute timeout for long audio files
     })
 
     return this.parseDeepgramResponse(response.data)
