@@ -130,9 +130,10 @@ export default function RecordingScreen() {
       // Reset
       setAudioBlob(null)
       setDuration(0)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Transcription failed:', error)
-      toast.error('Transcription failed. Please try again.')
+      const errorMessage = error?.message || 'Transcription failed. Please try again.'
+      toast.error(errorMessage, { duration: 5000 })
     } finally {
       setApiProgress({
         currentApi: '',

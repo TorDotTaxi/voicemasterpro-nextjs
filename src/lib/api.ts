@@ -17,10 +17,21 @@ export class ApiService {
     audioBlob: Blob,
     enableDiarization: boolean = true
   ): Promise<TranscriptionResult> {
+    // Check if API keys are configured
+    if (!DEEPGRAM_KEY && !FPT_AI_KEY) {
+      throw new Error('❌ No API keys configured! Please create .env.local file with your API keys.')
+    }
+
     const apis = [
-      { name: 'Deepgram', handler: this.transcribeWithDeepgram.bind(this) },
-      { name: 'FPT.AI', handler: this.transcribeWithFPTAI.bind(this) },
-    ]
+      { name: 'Deepgram', handler: this.transcribeWithDeepgram.bind(this), enabled: !!DEEPGRAM_KEY },
+      { name: 'FPT.AI', handler: this.transcribeWithFPTAI.bind(this), enabled: !!FPT_AI_KEY },
+    ].filter(api => api.enabled)
+
+    if (apis.length === 0) {
+      throw new Error('❌ No transcription APIs available. Check your API keys.')
+    }
+
+    let lastError: any = null
 
     for (let i = 0; i < apis.length; i++) {
       try {
@@ -29,15 +40,23 @@ export class ApiService {
         
         const result = await api.handler(audioBlob, enableDiarization)
         return result
-      } catch (error) {
+      } catch (error: any) {
+        lastError = error
         console.error(`${apis[i].name} failed:`, error)
+        console.error('Error details:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        })
+        
         if (i === apis.length - 1) {
-          throw new Error('All transcription APIs failed')
+          const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
+          throw new Error(`All transcription APIs failed. Last error: ${errorMsg}`)
         }
       }
     }
 
-    throw new Error('No transcription APIs available')
+    throw lastError || new Error('No transcription APIs available')
   }
 
   private static async transcribeWithDeepgram(

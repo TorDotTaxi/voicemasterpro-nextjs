@@ -58,9 +58,10 @@ export default function SttScreen() {
       setTranscription(correctedText)
       setSpeakers(result.speakers)
       toast.success('Transcription complete!')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Transcription failed:', error)
-      toast.error('Transcription failed')
+      const errorMessage = error?.message || 'Transcription failed. Please try again.'
+      toast.error(errorMessage, { duration: 5000 })
     } finally {
       setIsProcessing(false)
     }
