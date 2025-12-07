@@ -3,6 +3,7 @@ import { Questrial } from 'next/font/google'
 import { Source_Code_Pro } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const questrial = Questrial({ 
   weight: '400',
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-gray-50 dark:bg-gray-900">
         {children}
         <Toaster position="top-right" />
+        <SpeedInsights />
       </body>
     </html>
   )
