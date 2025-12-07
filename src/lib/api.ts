@@ -22,6 +22,7 @@ export class ApiService {
       throw new Error('❌ No API keys configured! Please create .env.local file with your API keys.')
     }
 
+
     // Validate file size (25MB limit for most APIs)
     const MAX_FILE_SIZE = 25 * 1024 * 1024 // 25MB in bytes
     if (audioBlob.size > MAX_FILE_SIZE) {
@@ -98,10 +99,33 @@ export class ApiService {
       ? 'https://api.deepgram.com/v1/listen?diarize=true&language=vi&punctuate=true&utterances=true'
       : 'https://api.deepgram.com/v1/listen?language=vi&punctuate=true'
 
-    // Don't set Content-Type - let browser detect from blob type
+    // Determine Content-Type from blob type or fallback to common audio types
+    let contentType = audioBlob.type || ''
+    
+    // Fallback for empty or generic blob types
+    if (!contentType || contentType === 'application/octet-stream') {
+      // Try to infer from filename if available (for File objects)
+      const file = audioBlob as File
+      if (file?.name) {
+        const ext = file.name.toLowerCase().split('.').pop()
+        const mimeMap: Record<string, string> = {
+          'mp3': 'audio/mpeg',
+          'wav': 'audio/wav',
+          'm4a': 'audio/mp4',
+          'webm': 'audio/webm',
+          'ogg': 'audio/ogg',
+          'flac': 'audio/flac',
+        }
+        contentType = mimeMap[ext || ''] || 'audio/wav' // Default to wav
+      } else {
+        contentType = 'audio/wav' // Default fallback
+      }
+    }
+
     const response = await axios.post(url, audioBlob, {
       headers: {
         'Authorization': `Token ${DEEPGRAM_KEY}`,
+        'Content-Type': contentType,
       },
       onUploadProgress: (progressEvent) => {
         const progress = progressEvent.total 
